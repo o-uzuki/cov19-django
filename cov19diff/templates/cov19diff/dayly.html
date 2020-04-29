@@ -1,0 +1,50 @@
+{% extends "cov19diff/base.html" %}
+
+{% block prvcss %}
+<style>
+  table {
+    border: solid 1px #000000;
+    border-collapse: collapse;
+  }
+  th, td {
+    border: solid 1px #000000;
+  }
+  tr td {
+    text-align: right;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div>
+  <h2>Daily Status for {{ day }}</h2>
+  <table class="table table-sm table-striped">
+    <tr>
+      <th>Contory Name</th>
+      <th>COnfirmed</th>
+      <th>Deaths</th>
+      <th>Ratio Deaths</th>
+      <th>Recovered</th>
+      <th>Ratio Recoverd</th>
+      <th>Active</th>
+      <th>Ratio Active</th>
+    </tr>
+    {% for dayly in daylys %}
+    {% if dayly.cname == 'Japan' %}
+    <tr style="color: red;">
+    {% else %}
+    <tr>
+    {% endif %}
+      <td>{{ dayly.cname }}</td>
+      <td>{{ dayly.confirmed }}</td>
+      <td>{{ dayly.deaths }}</td>
+      <td>{{ dayly.deathRatio }}</td>
+      <td>{{ dayly.recover }}</td>
+      <td>{{ dayly.recoverRatio }}</td>
+      <td>{{ dayly.active }}</td>
+      <td>{{ dayly.activeRatio }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}

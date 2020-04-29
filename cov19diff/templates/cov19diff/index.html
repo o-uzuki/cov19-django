@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="ja" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+  </head>
+  <body>
+    <form action="/cov19diff/dodiff" method="post">
+      <input type="submit" value="do diff">
+      {% csrf_token %}
+      {% for file in files %}
+      <div>
+      <input type="checkbox" id="{{ file }}" name="{{ file }}">
+      <label for="{{ file }}">{{ file }}</label>
+      </div>
+      {% endfor %}
+    </form>
+  </body>
+</html>

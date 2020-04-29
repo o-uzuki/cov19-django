@@ -1,0 +1,23 @@
+<html>
+<head></head>
+<body>
+<p>list.html</p>
+<p>Old time : {{ oldtime }}</p>
+<p>New time : {{ newtime }}</p>
+<table>
+{% for result in results %}
+{% if result.pcent|length > 3 %}
+<tr style="color: red">
+{% else %}
+<tr>
+{% endif %}
+  <td>{{ result.cname }}</td>
+  <td>{{ result.oldcount }}</td>
+  <td>{{ result.newcount }}</td>
+  <td>{{ result.pcent }}</td>
+  <td>{{ result.population }}</td>
+</tr>
+{% endfor %}
+</table>
+</body>
+</html>
