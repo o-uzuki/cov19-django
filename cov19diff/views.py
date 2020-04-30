@@ -3,6 +3,12 @@ from django.http import HttpResponse
 from cov19diff.restype import ResultType
 from cov19diff.restype import DaylyStatus
 from cov19diff.jhudata import readDaily
+
+from cov19diff.models import DailyCsv
+from rest_framework import viewsets
+from rest_framework import permissions
+from cov19diff.serializers import DailyCsvSerializer
+
 import glob
 import os
 
@@ -88,3 +94,8 @@ def daylyStat(request,day,ord):
 
     return render(request, 'cov19diff/dayly.html',
                 {'daylys': daylys, 'day': day})
+
+class DailyCsvViewSet(viewsets.ModelViewSet):
+    queryset = DailyCsv.objects.all()
+    serializer_class = DailyCsvSerializer
+    permission_classes = [permissions.IsAuthenticated]
