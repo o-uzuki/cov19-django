@@ -19,3 +19,7 @@ def readDaily(day):
             data['Recovered'] = data['Recovered'] + int(row['Recovered'])
 
         return datas
+
+def dayCSVFormat(day):
+    parts = day.split('/') # day YYYY/MM/DD
+    return parts[1] + '-' + parts[2] + '-' + parts[0]
