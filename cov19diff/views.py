@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from cov19diff.restype import ResultType
 from cov19diff.restype import DaylyStatus
-from cov19diff.jhudata import readDaily
+from cov19diff.jhudata import readDaily, dayCSVFormat
 
 from cov19diff.models import DailyCsv
 from rest_framework import viewsets
@@ -94,6 +94,15 @@ def daylyStat(request,day,ord):
 
     return render(request, 'cov19diff/dayly.html',
                 {'daylys': daylys, 'day': day})
+
+def doDayly(request):
+    if request.method == 'GET':
+        return render(request, 'cov19diff/dayly.html',
+                    {'daylys': [], 'day': None})
+    else:
+        day = dayCSVFormat(request.POST['targetday'])
+        ord = request.POST['orderby']
+        return daylyStat(request, day, ord)
 
 class DailyCsvViewSet(viewsets.ModelViewSet):
     queryset = DailyCsv.objects.all()

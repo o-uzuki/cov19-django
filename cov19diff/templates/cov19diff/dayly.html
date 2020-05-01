@@ -16,35 +16,76 @@
 {% endblock %}
 
 {% block content %}
-<div>
-  <h2>Daily Status for {{ day }}</h2>
-  <table class="table table-sm table-striped">
-    <tr>
-      <th>Cuntory Name</th>
-      <th>Confirmed</th>
-      <th>Deaths</th>
-      <th>Ratio Deaths</th>
-      <th>Recovered</th>
-      <th>Ratio Recovered</th>
-      <th>Active</th>
-      <th>Ratio Active</th>
-    </tr>
-    {% for dayly in daylys %}
-    {% if dayly.cname == 'Japan' %}
-    <tr style="color: red;">
-    {% else %}
-    <tr>
-    {% endif %}
-      <td>{{ dayly.cname }}</td>
-      <td>{{ dayly.confirmed }}</td>
-      <td>{{ dayly.deaths }}</td>
-      <td>{{ dayly.deathRatio }}</td>
-      <td>{{ dayly.recover }}</td>
-      <td>{{ dayly.recoverRatio }}</td>
-      <td>{{ dayly.active }}</td>
-      <td>{{ dayly.activeRatio }}</td>
-    </tr>
-    {% endfor %}
-  </table>
+<div class="container">
+  <div class="row">
+    <div class="col-2">
+      FORM
+      <form action="/cov19diff/dayly" method="post">
+        {% csrf_token %}
+        <div class="form-group">
+          <label for="targetDay">日付</label>
+          <input type="text" class="form-control" id="targetDay" name="targetday">
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="orderby" id="orderbyComfirmed" value="C">
+          <label class="form-check-label" for="orderbyComfirmed">
+            累計確認者数
+          </label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="orderby" id="orderbyDeaths" value="D">
+          <label class="form-check-label" for="orderbyDeaths">
+            死亡者数
+          </label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="orderby" id="orderbyRecovered" value="R">
+          <label class="form-check-label" for="orderbyRecovered">
+            回復者数
+          </label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="orderby" id="orderbyActive" value="A">
+          <label class="form-check-label" for="orderbyActive">
+            現在数
+          </label>
+        </div>
+        <input type="submit" class="btn btn-primary" value="apply">
+      </form>
+    </div>
+    <div class="col">
+      {% if daylys %}
+      <h2>Daily Status for {{ day }}</h2>
+      <table class="table table-sm table-striped">
+        <tr>
+          <th>Cuntory Name</th>
+          <th>Confirmed</th>
+          <th>Deaths</th>
+          <th>Ratio Deaths</th>
+          <th>Recovered</th>
+          <th>Ratio Recovered</th>
+          <th>Active</th>
+          <th>Ratio Active</th>
+        </tr>
+        {% for dayly in daylys %}
+        {% if dayly.cname == 'Japan' %}
+        <tr style="color: red;">
+        {% else %}
+        <tr>
+        {% endif %}
+          <td>{{ dayly.cname }}</td>
+          <td>{{ dayly.confirmed }}</td>
+          <td>{{ dayly.deaths }}</td>
+          <td>{{ dayly.deathRatio }}</td>
+          <td>{{ dayly.recover }}</td>
+          <td>{{ dayly.recoverRatio }}</td>
+          <td>{{ dayly.active }}</td>
+          <td>{{ dayly.activeRatio }}</td>
+        </tr>
+        {% endfor %}
+      </table>
+      {% endif %}
+    </div>
+  </div>
 </div>
 {% endblock %}

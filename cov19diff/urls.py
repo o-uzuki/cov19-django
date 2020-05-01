@@ -13,6 +13,7 @@ urlpatterns = [
     path('dodiff', views.dodiff, name='dodiff'),
     path('list/<str:old>/<str:new>', views.difflist, name='list'),
     path('dayly/<str:day>/<str:ord>', views.daylyStat, name='dayly'),
+    path('dayly',views.doDayly, name="dodayly"),
     path('', include(router.urls)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]
