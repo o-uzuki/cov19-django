@@ -9,6 +9,8 @@ from rest_framework import viewsets
 from rest_framework import permissions
 from cov19diff.serializers import DailyCsvSerializer
 
+from cov19diff.forms import DailyStatusForm
+
 import glob
 import os
 
@@ -67,7 +69,7 @@ def difflist(request, old, new):
     return render(request, 'cov19diff/list.html',
                 {'results': results, 'oldtime': oldtime, 'newtime': newtime})
 
-def daylyStat(request,day,ord):
+def daylyStat(request,day,ord,form):
     datas = readDaily(day)
     daylys = []
     for data in datas:
@@ -93,16 +95,19 @@ def daylyStat(request,day,ord):
         daylys.sort(key=lambda d: d.cname)
 
     return render(request, 'cov19diff/dayly.html',
-                {'daylys': daylys, 'day': day})
+                {'daylys': daylys, 'day': day, 'form': form})
 
 def doDayly(request):
     if request.method == 'GET':
-        return render(request, 'cov19diff/dayly.html',
-                    {'daylys': [], 'day': None})
+        form = DailyStatusForm()
     else:
-        day = dayCSVFormat(request.POST['targetday'])
-        ord = request.POST['orderby']
-        return daylyStat(request, day, ord)
+        form = DailyStatusForm(request.POST)
+        if form.is_valid():
+            day = dayCSVFormat(form.cleaned_data['day'])
+            ord = form.cleaned_data['order']
+            return daylyStat(request, day, ord, form)
+    return render(request, 'cov19diff/dayly.html',
+                {'daylys': [], 'day': None, 'form': form})
 
 class DailyCsvViewSet(viewsets.ModelViewSet):
     queryset = DailyCsv.objects.all()
