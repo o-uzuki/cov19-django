@@ -45,7 +45,7 @@
         {% else %}
         <tr>
         {% endif %}
-          <td>{{ dayly.cname }}</td>
+          <td><a href="/cov19diff/ts/{{ dayly.cname }}">{{ dayly.cname }}</a></td>
           <td>{{ dayly.confirmed }}</td>
           <td>{{ dayly.deaths }}</td>
           <td>{{ dayly.deathRatio }}</td>

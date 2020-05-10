@@ -1,6 +1,7 @@
 import sys
 import csv
 from cov19diff.models import DailyCsv
+from django.core.exceptions import ObjectDoesNotExist
 
 #dataroot = '/jobs/jhu-cov19/COVID-19/csse_covid_19_data/csse_covid_19_daily_reports/'
 dataroot = './cov19diff/datas/'
@@ -8,7 +9,10 @@ dataroot = './cov19diff/datas/'
 def readDaily(day):
 #    with open(dataroot + day + '.csv', newline='', encoding='utf-8') as csvfile:
 #    with DailyCsv.objects.get(day=day).data.split('\n') as csvfile:
-    csvfile = DailyCsv.objects.get(day=day).data.split('\n')
+    try:
+        csvfile = DailyCsv.objects.get(day=day).data.split('\n')
+    except ObjectDoesNotExist:
+        return dict()
     datas = dict()
     reader = csv.DictReader(csvfile)
     for row in reader:

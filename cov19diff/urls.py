@@ -14,6 +14,7 @@ urlpatterns = [
     path('list/<str:old>/<str:new>', views.difflist, name='list'),
     path('dayly/<str:day>/<str:ord>', views.daylyStat, name='dayly'),
     path('dayly',views.doDayly, name="dodayly"),
+    path('ts/<str:cname>',views.doTS, name="doTS"),
     path('', include(router.urls)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]

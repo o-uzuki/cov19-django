@@ -1,0 +1,53 @@
+{% extends "cov19diff/base.html" %}
+
+{% block prvcss %}
+<style>
+  table {
+    border: solid 1px #000000;
+    border-collapse: collapse;
+  }
+  th, td {
+    border: solid 1px #000000;
+  }
+  tr td {
+    text-align: right;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h1> Time serise for {{ cname }} </h1>
+  <div class="row">
+    <div class="col-6">
+      <table class="table table-sm table-striped">
+        <tr>
+          <th>日付</th>
+          <th>累計感染者</th>
+          <th>Δ累計感染者</th>
+          <th>死亡</th>
+          <th>Δ死亡</th>
+          <th>回復</th>
+          <th>Δ回復</th>
+          <th>現在</th>
+          <th>Δ現在</th>
+        </tr>
+        {% for day, value in days.items %}
+        <tr>
+          <td>{{ day }}</td>
+          <td>{{ value.confirmed }}</td>
+          <td>{{ value.dConfirmed }}</td>
+          <td>{{ value.deaths }}</td>
+          <td>{{ value.dDeaths }}</td>
+          <td>{{ value.recover }}</td>
+          <td>{{ value.dRecover }}</td>
+          <td>{{ value.active }}</td>
+          <td>{{ value.dActive }}</td>
+        </tr>
+        {% endfor %}
+      </table>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

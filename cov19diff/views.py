@@ -14,10 +14,13 @@ from cov19diff.forms import DailyStatusForm
 import glob
 import os
 
+from datetime import date
+from datetime import timedelta
+
 # Create your views here.
 
 def filelist():
-    files = glob.glob("../*.txt")
+    files = glob.glob("../snap/*.txt")
     files = list(map(lambda x: os.path.basename(x.replace('.txt','')), files))
     files.sort(reverse=True)
     return files
@@ -42,8 +45,8 @@ def getItems(line):
         return None
 
 def difflist(request, old, new):
-    oldfilen = '../'+old+'.txt'
-    newfilen = '../'+new+'.txt'
+    oldfilen = '../snap/'+old+'.txt'
+    newfilen = '../snap/'+new+'.txt'
     oldstat = open(oldfilen)
     newstat = open(newfilen)
 
@@ -108,6 +111,31 @@ def doDayly(request):
             return daylyStat(request, day, ord, form)
     return render(request, 'cov19diff/dayly.html',
                 {'daylys': [], 'day': None, 'form': form})
+
+def doTS(request,cname):
+    today = date.today()
+    targetday = today - timedelta(days=30)
+    pv = None
+    days = dict()
+    while targetday < today:
+        tday = targetday.strftime('%m-%d-%Y')
+        datas = readDaily(tday)
+        if len(datas) > 0 and cname in datas:
+            if pv:
+                nv = DaylyStatus(cname,
+                                      datas[cname]['Confirmed'],
+                                      datas[cname]['Deaths'],
+                                      datas[cname]['Recovered'])
+                days[tday] = nv.setdiff(pv)
+                pv = nv
+            else:
+                pv = DaylyStatus(cname,
+                                      datas[cname]['Confirmed'],
+                                      datas[cname]['Deaths'],
+                                      datas[cname]['Recovered'])
+        targetday = targetday + timedelta(days=1)
+    return render(request, 'cov19diff/ts.html',
+                {'cname': cname, 'days': days})
 
 class DailyCsvViewSet(viewsets.ModelViewSet):
     queryset = DailyCsv.objects.all()

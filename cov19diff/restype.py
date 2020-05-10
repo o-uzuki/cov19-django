@@ -27,3 +27,10 @@ class DaylyStatus:
 
     def activeRatio(self):
         return '%2.1f' % ((self.active()/self.confirmed) * 100)
+
+    def setdiff(self, old):
+        self.dConfirmed = self.confirmed - old.confirmed
+        self.dDeaths = self.deaths - old.deaths
+        self.dRecover = self.recover - old.recover
+        self.dActive = self.active() - old.active()
+        return self
