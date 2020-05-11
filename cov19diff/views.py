@@ -134,6 +134,7 @@ def doTS(request,cname):
                                       datas[cname]['Deaths'],
                                       datas[cname]['Recovered'])
         targetday = targetday + timedelta(days=1)
+    #days = reversed(days)
     return render(request, 'cov19diff/ts.html',
                 {'cname': cname, 'days': days})
 

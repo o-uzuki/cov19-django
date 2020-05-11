@@ -48,6 +48,58 @@
       </table>
 
     </div>
+    <div class="col-6">
+      <div id="chart">
+      </div>
+    </div>
   </div>
 </div>
+<script src="https://d3js.org/d3.v5.min.js"></script>
+<script>
+  var data = [
+  {% for day, value in days.items %}
+    ['{{ day }}',{{ value.active}}],
+  {% endfor %}
+    ];
+  var parseDate = d3.timeParse("%m-%d-%Y");
+  data.forEach(d => {
+    d[0] = parseDate(d[0])
+  });
+
+  margin = ({top: 20, right: 20, bottom: 30, left: 50});
+  width = 500;
+  height = 500;
+  x = d3.scaleUtc()
+      .domain(d3.extent(data, d => d[0]))
+      .range([margin.left, width - margin.right]);
+  y = d3.scaleLinear()
+      .domain([0, d3.max(data, d => d[1])]).nice()
+      .range([height - margin.bottom, margin.top]);
+  line = d3.line()
+      .x(d => x(d[0]))
+      .y(d => y(d[1])) ;
+  xAxis = g => g
+      .attr("transform", `translate(0,${height - margin.bottom})`)
+      .call(d3.axisBottom(x).ticks(width / 80).tickSizeOuter(0));
+  yAxis = g => g
+      .attr("transform", `translate(${margin.left},0)`)
+      .call(d3.axisLeft(y));
+
+  svg = d3.select("#chart")
+      .append("svg")
+      .attr("width", width)
+      .attr("height", height);
+
+  svg.append("g")
+      .call(xAxis);
+
+  svg.append("g")
+      .call(yAxis)
+
+  svg.append("path")
+      .datum(data)
+      .attr("fill", "none")
+      .attr("stroke", "steelblue")
+      .attr("d", line);
+</script>
 {% endblock %}
