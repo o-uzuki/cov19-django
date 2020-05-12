@@ -134,9 +134,13 @@ def doTS(request,cname):
                                       datas[cname]['Deaths'],
                                       datas[cname]['Recovered'])
         targetday = targetday + timedelta(days=1)
-    #days = reversed(days)
+    wdays = list(days.keys())
+    wdays.reverse()
+    rdays = dict()
+    for key in wdays:
+        rdays[key] = days[key]
     return render(request, 'cov19diff/ts.html',
-                {'cname': cname, 'days': days})
+                {'cname': cname, 'days': days, 'rdays': rdays})
 
 class DailyCsvViewSet(viewsets.ModelViewSet):
     queryset = DailyCsv.objects.all()
