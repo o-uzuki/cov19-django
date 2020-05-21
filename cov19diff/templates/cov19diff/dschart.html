@@ -1,0 +1,113 @@
+{% extends "cov19diff/base.html" %}
+
+{% block prvcss %}
+<style>
+  table {
+    border: solid 1px #000000;
+    border-collapse: collapse;
+  }
+  th, td {
+    border: solid 1px #000000;
+  }
+  tr td {
+    text-align: right;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <p> Johns Hopkins University CSSE 様のデータを使用させていただいております</p>
+  <h1> Daily Status Charts </h1>
+  <div class="row">
+    <div class="col">
+      <div id="chart">
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://d3js.org/d3.v5.min.js"></script>
+<script>
+  var parseDate = d3.timeParse("%m-%d-%Y");
+  var data = [
+  {% for dayly in daylys %}
+    [{{ dayly.deathRatio }},{{ dayly.recoverRatio}}],
+  {% endfor %}
+    ];
+
+  svg = makeChart("#chart","死者率　＊　回復率")
+  drawChart(svg) ;
+
+  var timer = setInterval(() => drawChart(svg), 10000)
+  setTimeout(() => clearInterval(timer), 300000)
+
+  function drawChart(svg) {
+    d3.tsv("/cov19diff/dsdata", function(d) {
+      return {
+        cname: d.name,
+        confirmed: +d.confirmed,
+        deaths: +d.deaths,
+        recover: +d.recover,
+        active: +d.active,
+        deathRatio: +d.deathRatio,
+        recoverRatio: +d.recoverRatio,
+        activeRatio: +d.activeRatio
+      }
+    }).then(function(data) {
+      joindata(svg,data)
+    })
+  }
+
+  function makeChart(id,title) {
+    margin = ({top: 30, right: 20, bottom: 30, left: 50});
+    width = 1000;
+    height = 600;
+    x = d3.scaleLinear()
+        .domain([0, 40])
+        .range([margin.left, width - margin.right]);
+    y = d3.scaleLinear()
+        .domain([0, 100])
+        .range([height - margin.bottom, margin.top]);
+    //rainbow = d3.scaleSequential(d3.interpolateRainbow)
+    //    .range([0, 10]);
+    xAxis = g => g
+        .attr("transform", `translate(0,${height - margin.bottom})`)
+        .call(d3.axisBottom(x));
+    yAxis = g => g
+        .attr("transform", `translate(${margin.left},0)`)
+        .call(d3.axisLeft(y));
+
+    svg = d3.select(id)
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height);
+
+    svg.append("text")
+        .attr("x", 0)
+        .attr("y", 20)
+        .text(title);
+
+    svg.append("g")
+        .call(xAxis);
+
+    svg.append("g")
+        .call(yAxis);
+
+    return svg;
+
+  }
+
+  function joindata(svg,data) {
+    svg.selectAll("circle")
+        .data(data)
+        .join(
+          enter => enter.append("circle")
+        )
+        .attr("r", d => Math.LOG10E * Math.log(d.confirmed) * 1.4 + 1)
+        .attr("cx", d => x(d.deathRatio))
+        .attr("cy", d => y(d.recoverRatio))
+        .attr("fill", d => d3.interpolateReds(Math.LOG10E * Math.log(d.confirmed)/10));
+
+  }
+</script>
+{% endblock %}

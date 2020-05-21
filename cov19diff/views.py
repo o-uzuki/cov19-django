@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from cov19diff.restype import ResultType
 from cov19diff.restype import DaylyStatus
 from cov19diff.jhudata import readDaily, dayCSVFormat
+from cov19diff.dailystatusData import DailyStatusData
 
 from cov19diff.models import DailyCsv
 from rest_framework import viewsets
@@ -14,7 +15,7 @@ from cov19diff.forms import DailyStatusForm
 import glob
 import os
 
-from datetime import date
+from datetime import date, datetime
 from datetime import timedelta
 
 # Create your views here.
@@ -112,6 +113,27 @@ def doDayly(request):
     return render(request, 'cov19diff/dayly.html',
                 {'daylys': [], 'day': None, 'form': form})
 
+def doDaylyChart(request):
+    if request.method == 'GET':
+        form = DailyStatusForm()
+        daylys = []
+        day = None
+    else:
+        form = DailyStatusForm(request.POST)
+        if form.is_valid():
+            day = dayCSVFormat(form.cleaned_data['day'])
+            ord = form.cleaned_data['order']
+            datas = readDaily(day)
+            daylys = []
+            for data in datas:
+                daylys.append(DaylyStatus(data,
+                                  datas[data]['Confirmed'],
+                                  datas[data]['Deaths'],
+                                  datas[data]['Recovered']))
+
+    return render(request, 'cov19diff/dschart.html',
+                {'daylys': daylys, 'day': day, 'form': form})
+
 def doTS(request,cname):
     today = date.today()
     targetday = today - timedelta(days=30)
@@ -141,6 +163,18 @@ def doTS(request,cname):
         rdays[key] = days[key]
     return render(request, 'cov19diff/ts.html',
                 {'cname': cname, 'days': days, 'rdays': rdays})
+
+def getDsdata(request):
+    dsd = DailyStatusData()
+    if 'dsd.now' in request.session:
+        dsd_now = request.session.get('dsd.now')
+        dsd.now = datetime.strptime(dsd_now,'%m-%d-%Y')
+    data = dsd.getData()
+    if not data:
+        dsd.reset()
+        data = dsd.getData()
+    request.session['dsd.now'] = dsd.now.strftime('%m-%d-%Y')
+    return HttpResponse(data)
 
 class DailyCsvViewSet(viewsets.ModelViewSet):
     queryset = DailyCsv.objects.all()
