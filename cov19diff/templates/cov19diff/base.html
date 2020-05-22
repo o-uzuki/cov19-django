@@ -9,6 +9,10 @@
     <title></title>
   </head>
   <body>
+    <nav class="nav justify-content-center">
+      <a class="nav-link" href="{% url 'cov19diff:dodayly' %}">Daily Status</a>
+      <a class="nav-link" href="{% url 'cov19diff:dodaylychart' %}">Daily Status Chart</a>
+    </nav>
     <div id="content">
       {% block content %}{% endblock %}
     </div>
