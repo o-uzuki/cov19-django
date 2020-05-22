@@ -15,3 +15,4 @@ class DailyStatusForm(forms.Form):
     order = forms.ChoiceField(label='ソート順', choices=CHOICE)
 
     day.widget.attrs.update(size='12')
+    day.widget.attrs.update(placeholder="YYYY/MM/DD")
