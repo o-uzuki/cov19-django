@@ -102,11 +102,16 @@
         .data(data)
         .join(
           enter => enter.append("circle")
-        )
-        .attr("r", d => Math.LOG10E * Math.log(d.confirmed) * 1.4 + 1)
-        .attr("cx", d => x(d.deathRatio))
-        .attr("cy", d => y(d.recoverRatio))
-        .attr("fill", d => d3.interpolateReds(Math.LOG10E * Math.log(d.confirmed)/10));
+                        .attr("r", d => Math.LOG10E * Math.log(d.confirmed) * 1.4 + 1)
+                        .attr("cx", d => x(d.deathRatio))
+                        .attr("cy", d => y(d.recoverRatio))
+                        .attr("fill", d => d3.interpolateReds(Math.LOG10E * Math.log(d.confirmed)/10)),
+          update => update.transition().duration(8000)
+          .attr("r", d => Math.LOG10E * Math.log(d.confirmed) * 1.4 + 1)
+          .attr("cx", d => x(d.deathRatio))
+          .attr("cy", d => y(d.recoverRatio))
+          .attr("fill", d => d3.interpolateReds(Math.LOG10E * Math.log(d.confirmed)/10))
+        );
 
   }
 </script>
