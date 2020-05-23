@@ -10,16 +10,16 @@ class DailyStatusData:
     def __init__(self):
         self.start = datetime.today()
         self.end = self.start - timedelta(days=30)
-        self.now = self.start
+        self.now = self.end
 
     def reset(self):
-        self.now = self.start
+        self.now = self.end
 
     def getData(self):
         lines = []
-        while self.end <= self.now:
+        while self.now <= self.start:
             datas = readDaily(self.now.strftime('%m-%d-%Y'))
-            self.now = self.now - timedelta(days=1)
+            self.now = self.now + timedelta(days=1)
             if len(datas) > 0:
                 lines.append('name\tconfirmed\tdeaths\tdeathRatio\trecover\trecoverRatio\tactive\tactiveRatio')
                 dss = []
