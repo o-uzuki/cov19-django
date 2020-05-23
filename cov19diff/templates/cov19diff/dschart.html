@@ -34,7 +34,7 @@
   {% endfor %}
     ];
 
-  svg = makeChart("#chart","死者率　＊　回復率")
+  svg = makeChart("#chart","死亡率（死亡者数/累計感染者数)","回復率（回復者数/累計感染者数)")
   drawChart(svg) ;
 
   var timer = setInterval(() => drawChart(svg), 10000)
@@ -57,8 +57,8 @@
     })
   }
 
-  function makeChart(id,title) {
-    margin = ({top: 30, right: 20, bottom: 30, left: 50});
+  function makeChart(id,xlabel,ylabel) {
+    margin = ({top: 30, right: 20, bottom: 50, left: 50});
     width = 1000;
     height = 600;
     x = d3.scaleLinear()
@@ -82,9 +82,19 @@
         .attr("height", height);
 
     svg.append("text")
-        .attr("x", 0)
-        .attr("y", 20)
-        .text(title);
+        .attr("x", (width - margin.right + margin.left) / 2)
+        .attr("y", height - margin.bottom / 3)
+        .attr("text-anchor", "middle")
+        .text(xlabel);
+
+    svg.append("text")
+        .attr("transform", `translate(${margin.left},${margin.top}) rotate(-90)`)
+        //.attr("transform", "rotate(-90)")
+        .attr("x", 0 - ((height - margin.top - margin.bottom)/ 2))
+        .attr("y", 0 - margin.left)
+        .attr("dy", "1em")
+        .attr("text-anchor", "middle")
+        .text(ylabel);
 
     svg.append("g")
         .call(xAxis);
