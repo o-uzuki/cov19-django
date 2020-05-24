@@ -12,6 +12,7 @@
     <nav class="nav justify-content-center">
       <a class="nav-link" href="{% url 'cov19diff:dodayly' %}">Daily Status</a>
       <a class="nav-link" href="{% url 'cov19diff:dodaylychart' %}">Daily Status Chart</a>
+      <a class="nav-link" href="{% url 'cov19diff:diffFromDb' %}">Diff Prev Day</a>
     </nav>
     <div id="content">
       <div class="container">
@@ -20,6 +21,7 @@
             <ul>
               <li> Johns Hopkins University CSSE 様のデータ(<a href="https://github.com/CSSEGISandData/COVID-19">https://github.com/CSSEGISandData/COVID-19</a>)を使用させていただいております。</li>
               <li>csse_covid_19_data/csse_covid_19_daily_reports/MM-DD-YYYY.csvを手動でロードしています。</li>
+              <li>なぜか、FireFoxではうまく動きません、Chromeでお願いします。</li>
             </ul>
           </div>
         </div>

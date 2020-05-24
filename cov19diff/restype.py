@@ -5,9 +5,11 @@ class ResultType:
         self.cname = cname
         self.oldcount = int(oldcount)
         self.newcount = int(newcount)
-        self.pcent = '%(pc)3.1f' % {'pc': (self.newcount-self.oldcount)/self.oldcount*100}
+        self.diff = self.newcount-self.oldcount
+        self.pcent = '%(pc)3.1f' % {'pc': self.diff/self.oldcount*100}
         if self.cname in populations:
             self.population = '%(pd)5.1f' % {'pd': populations[self.cname]/self.newcount}
+
 
 class DaylyStatus:
     def __init__(self,cname,confirmed,deaths,recover):

@@ -16,3 +16,9 @@ class DailyStatusForm(forms.Form):
 
     day.widget.attrs.update(size='12')
     day.widget.attrs.update(placeholder="YYYY/MM/DD")
+
+class DiffForm(forms.Form):
+    day = forms.CharField(label='対象日', max_length=10)
+
+    day.widget.attrs.update(size='12')
+    day.widget.attrs.update(placeholder="YYYY/MM/DD")

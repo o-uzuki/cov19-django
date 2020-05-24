@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from cov19diff.restype import ResultType
 from cov19diff.restype import DaylyStatus
-from cov19diff.jhudata import readDaily, dayCSVFormat
+from cov19diff.jhudata import readDaily, dayCSVFormat, getLast
 from cov19diff.dailystatusData import DailyStatusData
 
 from cov19diff.models import DailyCsv
@@ -10,7 +10,7 @@ from rest_framework import viewsets
 from rest_framework import permissions
 from cov19diff.serializers import DailyCsvSerializer
 
-from cov19diff.forms import DailyStatusForm
+from cov19diff.forms import DailyStatusForm, DiffForm
 
 import glob
 import os
@@ -73,6 +73,32 @@ def difflist(request, old, new):
     return render(request, 'cov19diff/list.html',
                 {'results': results, 'oldtime': oldtime, 'newtime': newtime})
 
+def diffFromDb(request):
+    if request.method == 'GET':
+        lastday = getLast()
+        day = lastday[0]
+        form = DiffForm(initial={'day': lastday[1]})
+    else:
+        form = DiffForm(request.POST)
+        if form.is_valid():
+            day = dayCSVFormat(form.cleaned_data['day'])
+
+    new = datetime.strptime(day, '%m-%d-%Y')
+    old = new - timedelta(days=1)
+    newdata = readDaily(day)
+    olddata = readDaily(old.strftime('%m-%d-%Y'))
+    results = []
+    if newdata and olddata:
+        for cname, value in newdata.items():
+            if cname in olddata:
+                results.append(ResultType(cname, str(olddata[cname]['Confirmed']), str(value['Confirmed'])))
+    results.sort(key=lambda d: d.newcount, reverse=True)
+    return render(request, 'cov19diff/diffdb.html',
+                {'results': results,
+                'oldtime': old.strftime('%m-%d-%Y'),
+                'newtime': new.strftime('%m-%d-%Y'),
+                'form': form})
+
 def daylyStat(request,day,ord,form):
     datas = readDaily(day)
     daylys = []
@@ -103,15 +129,19 @@ def daylyStat(request,day,ord,form):
 
 def doDayly(request):
     if request.method == 'GET':
-        form = DailyStatusForm()
+        lastday = getLast()
+        day = lastday[0]
+        ord = 'A'
+        form = DailyStatusForm(initial={'day': lastday[1], 'order': ord})
     else:
         form = DailyStatusForm(request.POST)
         if form.is_valid():
             day = dayCSVFormat(form.cleaned_data['day'])
             ord = form.cleaned_data['order']
-            return daylyStat(request, day, ord, form)
-    return render(request, 'cov19diff/dayly.html',
+        else:
+            return render(request, 'cov19diff/dayly.html',
                 {'daylys': [], 'day': None, 'form': form})
+    return daylyStat(request, day, ord, form)
 
 def doDaylyChart(request):
     if request.method == 'GET':

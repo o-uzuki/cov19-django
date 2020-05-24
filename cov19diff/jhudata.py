@@ -2,6 +2,7 @@ import sys
 import csv
 from cov19diff.models import DailyCsv
 from django.core.exceptions import ObjectDoesNotExist
+from datetime import date, timedelta
 
 #dataroot = '/jobs/jhu-cov19/COVID-19/csse_covid_19_data/csse_covid_19_daily_reports/'
 dataroot = './cov19diff/datas/'
@@ -26,6 +27,19 @@ def readDaily(day):
         data['Recovered'] = data['Recovered'] + int(row['Recovered'])
 
     return datas
+
+def getLast():
+    theday = date.today()
+    while True:
+        day = theday.strftime('%m-%d-%Y')
+        try:
+            c = DailyCsv.objects.get(day=day)
+            break
+        except ObjectDoesNotExist:
+            pass
+        theday = theday - timedelta(days=1)
+    return [day,theday.strftime('%Y/%m/%d')]
+
 
 def dayCSVFormat(day):
     parts = day.split('/') # day YYYY/MM/DD

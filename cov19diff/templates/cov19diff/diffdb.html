@@ -1,0 +1,58 @@
+{% extends "cov19diff/base.html" %}
+
+{% block prvcss %}
+<style>
+  table {
+    border: solid 1px #000000;
+    border-collapse: collapse;
+  }
+  th, td {
+    border: solid 1px #000000;
+  }
+  tr td {
+    text-align: right;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h1> Diff between {{ oldtime }} => {{ newtime }}</h1>
+  <div class="row">
+    <div class="col-2">
+      <form action="/cov19diff/diffdb" method="post">
+        {% csrf_token %}
+        {{ form }}
+        <input type="submit" class="btn btn-primary" value="apply">
+      </form>
+    </div>
+    <div class="col-8">
+      <table class="table table-sm table-striped">
+        <tr>
+          <th>Cuntory Name</th>
+          <th>{{ oldtime }}</th>
+          <th>{{ newtime }}</th>
+          <th>Δ</th>
+          <th>Δ%</th>
+          <th>PPI</th>
+        </tr>
+        {% for result in results %}
+        {% if result.pcent|length > 3 %}
+        <tr style="color: red">
+        {% else %}
+        <tr>
+        {% endif %}
+          <td><a href="/cov19diff/ts/{{ result.cname }}">{{ result.cname }}</a></td>
+          <td>{{ result.oldcount }}</td>
+          <td>{{ result.newcount }}</td>
+          <td>{{ result.diff }}</td>
+          <td>{{ result.pcent }}</td>
+          <td>{{ result.population }}</td>
+        </tr>
+        {% endfor %}
+      </table>
+
+    </div>
+  </div>
+</div>
+{% endblock %}
