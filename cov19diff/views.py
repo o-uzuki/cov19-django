@@ -206,6 +206,9 @@ def getDsdata(request):
     request.session['dsd.now'] = dsd.now.strftime('%m-%d-%Y')
     return HttpResponse(data)
 
+def test(request):
+    return render(request, 'cov19diff/test.html',{})
+
 class DailyCsvViewSet(viewsets.ModelViewSet):
     queryset = DailyCsv.objects.all()
     serializer_class = DailyCsvSerializer

@@ -18,6 +18,7 @@ urlpatterns = [
     path('diffdb',views.diffFromDb, name="diffFromDb"),
     path('dsdata', views.getDsdata, name="getDsdata"),
     path('ts/<str:cname>',views.doTS, name="doTS"),
+    path('test',views.test, name="test"),
     path('', include(router.urls)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]
