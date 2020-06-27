@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from cov19diff.restype import ResultType
-from cov19diff.restype import DaylyStatus
+from cov19diff.restype import ResultType, ResultTypeEncoder
+from cov19diff.restype import DaylyStatus, DaylyStatusEncoder
 from cov19diff.jhudata import readDaily, dayCSVFormat, getLast
 from cov19diff.dailystatusData import DailyStatusData
 
@@ -14,6 +14,7 @@ from cov19diff.forms import DailyStatusForm, DiffForm
 
 import glob
 import os
+import json
 
 from datetime import date, datetime
 from datetime import timedelta
@@ -98,6 +99,31 @@ def diffFromDb(request):
                 'oldtime': old.strftime('%m-%d-%Y'),
                 'newtime': new.strftime('%m-%d-%Y'),
                 'form': form})
+
+def getDiffJson(request):
+    lastday = getLast()
+    day = lastday[0]
+    return diffJson(request,day)
+
+def diffJson(request, day):
+    new = datetime.strptime(day, '%m-%d-%Y')
+    old = new - timedelta(days=1)
+    newdata = readDaily(day)
+    olddata = readDaily(old.strftime('%m-%d-%Y'))
+    results = []
+    if newdata and olddata:
+        for cname, value in newdata.items():
+            if cname in olddata:
+                results.append(ResultType(cname, str(olddata[cname]['Confirmed']), str(value['Confirmed'])))
+    results.sort(key=lambda d: d.newcount, reverse=True)
+    response = HttpResponse(json.dumps(
+                                    #results,
+                                    {'results': results,
+                                    'oldtime': old.strftime('%m-%d-%Y'),
+                                    'newtime': new.strftime('%m-%d-%Y')},
+                                    cls=ResultTypeEncoder))
+    response['Access-Control-Allow-Origin'] = '*'
+    return response
 
 def daylyStat(request,day,ord,form):
     datas = readDaily(day)
@@ -193,6 +219,43 @@ def doTS(request,cname):
         rdays[key] = days[key]
     return render(request, 'cov19diff/ts.html',
                 {'cname': cname, 'days': days, 'rdays': rdays})
+
+def TSJson(request,cname):
+    today = date.today()
+    targetday = today - timedelta(days=30)
+    pv = None
+    days = dict()
+    while targetday < today:
+        tday = targetday.strftime('%m-%d-%Y')
+        datas = readDaily(tday)
+        if len(datas) > 0 and cname in datas:
+            if pv:
+                nv = DaylyStatus(cname,
+                                      datas[cname]['Confirmed'],
+                                      datas[cname]['Deaths'],
+                                      datas[cname]['Recovered'])
+                nv.day = tday
+                days[tday] = nv.setdiff(pv)
+                pv = nv
+            else:
+                pv = DaylyStatus(cname,
+                                      datas[cname]['Confirmed'],
+                                      datas[cname]['Deaths'],
+                                      datas[cname]['Recovered'])
+        targetday = targetday + timedelta(days=1)
+    wdays = list(days.keys())
+    wdays.reverse()
+    rdays = dict()
+    for key in wdays:
+        rdays[key] = days[key]
+    response = HttpResponse(json.dumps(
+                                    #results,
+                                    {'cname': cname,
+                                    'days': list(days.values()),
+                                    'rdays': list(rdays.values())},
+                                    cls=DaylyStatusEncoder))
+    response['Access-Control-Allow-Origin'] = '*'
+    return response
 
 def getDsdata(request):
     dsd = DailyStatusData()

@@ -1,4 +1,6 @@
 from cov19diff.populations import populations
+import json
+from json import JSONEncoder
 
 class ResultType:
     def __init__(self,cname,oldcount,newcount):
@@ -11,12 +13,20 @@ class ResultType:
             self.population = '%(pd)5.1f' % {'pd': populations[self.cname]/self.newcount}
 
 
+class ResultTypeEncoder(JSONEncoder):
+    def default(self,o):
+        if isinstance(o,ResultType):
+            return o.__dict__
+        return json.JSONEncoder.default(self, o)
+
 class DaylyStatus:
     def __init__(self,cname,confirmed,deaths,recover):
         self.cname = cname
         self.confirmed = confirmed
         self.deaths = deaths
         self.recover = recover
+        self.day = ''
+        self.nActive = self.active()
 
     def active(self):
         return self.confirmed - self.deaths - self.recover
@@ -36,3 +46,9 @@ class DaylyStatus:
         self.dRecover = self.recover - old.recover
         self.dActive = self.active() - old.active()
         return self
+
+class DaylyStatusEncoder(JSONEncoder):
+    def default(self,o):
+        if isinstance(o,DaylyStatus):
+            return o.__dict__
+        return json.JSONEncoder.default(self, o)
