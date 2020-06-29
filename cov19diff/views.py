@@ -169,6 +169,42 @@ def doDayly(request):
                 {'daylys': [], 'day': None, 'form': form})
     return daylyStat(request, day, ord, form)
 
+def getDailyJson(request):
+    lastday = getLast()
+    day = lastday[0]
+    return dailyJson(request,day,'A')
+
+def dailyJson(request,day,ord):
+    datas = readDaily(day)
+    daylys = []
+    for data in datas:
+        daylys.append(DaylyStatus(data,
+                                  datas[data]['Confirmed'],
+                                  datas[data]['Deaths'],
+                                  datas[data]['Recovered']))
+    if ord == 'C':
+        daylys.sort(key=lambda d: d.confirmed, reverse=True)
+    elif ord == 'A':
+        daylys.sort(key=lambda d: d.active(), reverse=True)
+    elif ord == 'D':
+        daylys.sort(key=lambda d: d.deaths, reverse=True)
+    elif ord == 'R':
+        daylys.sort(key=lambda d: d.recover, reverse=True)
+    elif ord == 'DR':
+        daylys.sort(key=lambda d: float(d.deathRatio()), reverse=True)
+    elif ord == 'RR':
+        daylys.sort(key=lambda d: float(d.recoverRatio()), reverse=True)
+    elif ord == 'AR':
+        daylys.sort(key=lambda d: float(d.activeRatio()), reverse=True)
+    elif ord == 'CN':
+        daylys.sort(key=lambda d: d.cname)
+
+    response = HttpResponse(json.dumps(
+                                    {'daylys': daylys,'day': day,'ord': ord},
+                                    cls=DaylyStatusEncoder))
+    response['Access-Control-Allow-Origin'] = '*'
+    return response
+
 def doDaylyChart(request):
     if request.method == 'GET':
         form = DailyStatusForm()

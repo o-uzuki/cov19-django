@@ -27,6 +27,9 @@ class DaylyStatus:
         self.recover = recover
         self.day = ''
         self.nActive = self.active()
+        self.dRatio = self.deathRatio()
+        self.rRatio = self.recoverRatio()
+        self.aRatio = self.activeRatio()
 
     def active(self):
         return self.confirmed - self.deaths - self.recover
