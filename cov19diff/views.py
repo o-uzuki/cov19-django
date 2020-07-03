@@ -303,7 +303,9 @@ def getDsdata(request):
         dsd.reset()
         data = dsd.getData()
     request.session['dsd.now'] = dsd.now.strftime('%m-%d-%Y')
-    return HttpResponse(data)
+    response = HttpResponse(data)
+    response['Access-Control-Allow-Origin'] = '*'
+    return response
 
 def test(request):
     return render(request, 'cov19diff/test.html',{})
