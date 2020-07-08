@@ -19,7 +19,7 @@
 <div class="container">
   <h1> Time serise for {{ cname }} </h1>
   <div class="row">
-    <div class="col-6">
+    <div class="col-7">
       <table class="table table-sm table-striped">
         <tr>
           <th>日付</th>
@@ -48,7 +48,7 @@
       </table>
 
     </div>
-    <div class="col-6">
+    <div class="col-5">
       <div id="chart">
       </div>
       <div id="chart2">
@@ -81,8 +81,8 @@
   makeChart("#chart2",data2,"死亡数")
 
   function makeChart(id,data,title) {
-    margin = ({top: 30, right: 20, bottom: 30, left: 50});
-    width = 500;
+    margin = ({top: 30, right: 20, bottom: 30, left: 70});
+    width = 400;
     height = 400;
     x = d3.scaleUtc()
         .domain(d3.extent(data, d => d[0]))
