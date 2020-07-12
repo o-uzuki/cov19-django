@@ -8,6 +8,7 @@ class ResultType:
         self.oldcount = int(oldcount)
         self.newcount = int(newcount)
         self.diff = self.newcount-self.oldcount
+        self.fpcent = self.diff/self.oldcount*100
         self.pcent = '%(pc)3.1f' % {'pc': self.diff/self.oldcount*100}
         if self.cname in populations:
             self.population = '%(pd)5.1f' % {'pd': populations[self.cname]/self.newcount}

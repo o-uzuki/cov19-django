@@ -37,7 +37,7 @@
           <th>PPI</th>
         </tr>
         {% for result in results %}
-        {% if result.pcent|length > 3 %}
+        {% if result.fpcent > 5 %}
         <tr style="color: red">
         {% else %}
         <tr>
